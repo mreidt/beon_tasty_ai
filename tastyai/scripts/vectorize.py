@@ -1,8 +1,8 @@
-from src.vectorizer import Vectorizer
+from tastyai.src.vectorizer import Vectorizer
 
 def run():
     print("Running vectorize.py...")
-    vectorizer = Vectorizer('./tastyai/dataset/full_dataset.csv')
+    vectorizer = Vectorizer('./tastyai/src/dataset/full_dataset.csv')
     _ = vectorizer.vectorize()
     print("Vectorization complete.")
 

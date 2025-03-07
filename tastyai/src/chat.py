@@ -47,7 +47,7 @@ with st.form("my_form"):
                 initial_message = "Generating meal recommendations..."
 
         with st.spinner(initial_message):
-            vectorizer = Vectorizer('./tastyai/dataset/full_dataset.csv')
+            vectorizer = Vectorizer('./tastyai/src/dataset/full_dataset.csv')
             image_generator = ImageGenerator(openai_api_key)
             recommendation = Recommendation(vectorizer, openai_api_key)
             logger.debug("Getting recommendations...")
