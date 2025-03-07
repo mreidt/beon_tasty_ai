@@ -1,8 +1,10 @@
 import logging
+
 import openai
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 class ImageGenerator:
     def __init__(self, api_key):
@@ -12,7 +14,7 @@ class ImageGenerator:
         prompt = f"A beautiful photo of {title} with ingredients: {', '.join(ingredients)}."
         return prompt
 
-    def generate_image(self, meal: dict, model = "dall-e-2"):
+    def generate_image(self, meal: dict, model="dall-e-2"):
         """Generate an image using OpenAI's DALL-E API."""
         openai.api_key = self.api_key
         try:
@@ -20,7 +22,7 @@ class ImageGenerator:
                 prompt=self.__get_prompt(meal.get("title"), meal.get("ingredients")),
                 model=model,
                 n=1,
-                size="512x512"
+                size="512x512",
             )
             image_url = response.data[0].url
             return image_url

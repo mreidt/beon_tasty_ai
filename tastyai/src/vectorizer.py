@@ -1,16 +1,17 @@
-import pandas as pd
 import ast
-import torch
-from torch.utils.data import DataLoader
-from sentence_transformers import SentenceTransformer
-import numpy as np
 import logging
-import os
 import time
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
+import torch
+from sentence_transformers import SentenceTransformer
+from torch.utils.data import DataLoader
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 class Vectorizer:
     def __init__(self, file_path, batch_size=32, use_gpu=True, chunk_size=50000):
@@ -38,8 +39,14 @@ class Vectorizer:
         """Combine title, ingredients, and named entities (NER) into a single text feature."""
         df["NER"] = df["NER"].apply(self.__string_to_list)
         df["ingredients"] = df["ingredients"].apply(self.__string_to_list)
-        
-        return (df["title"] + " " + df["NER"].apply(lambda x: " ".join(x)) + " " + df["ingredients"].apply(lambda x: " ".join(x))).tolist()
+
+        return (
+            df["title"]
+            + " "
+            + df["NER"].apply(lambda x: " ".join(x))
+            + " "
+            + df["ingredients"].apply(lambda x: " ".join(x))
+        ).tolist()
 
     def vectorize(self):
         """Efficiently process and vectorize dataset in chunks without loading everything into memory."""
@@ -81,9 +88,8 @@ class Vectorizer:
                 np.save(self.embeddings_file_path, updated_data)
 
         total_time = time.time() - start_time
-        logger.debug(f"Total embedding time: {total_time:.2f} seconds ({total_time/60:.2f} minutes)")
+        logger.debug(f"Total embedding time: {total_time:.2f} seconds ({total_time / 60:.2f} minutes)")
 
         pd.to_pickle({"num_rows": total_rows, "time_taken": total_time}, self.metadata_file_path)
 
         return np.load(self.embeddings_file_path, mmap_mode="r")
-

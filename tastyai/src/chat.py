@@ -1,12 +1,13 @@
-import streamlit as st
-from vectorizer import Vectorizer
 import logging
-from nlp import NLP
-from recommendation import Recommendation
-from image_generator import ImageGenerator
-from PIL import Image
-import requests
 from io import BytesIO
+
+import requests
+import streamlit as st
+from image_generator import ImageGenerator
+from nlp import NLP
+from PIL import Image
+from recommendation import Recommendation
+from vectorizer import Vectorizer
 
 logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
@@ -18,7 +19,7 @@ st.title("TastyAI")
 with st.form("my_form"):
     text = st.text_area(
         "Enter text (we can answer in portuguese, spanish and english):",
-        value="I want a sugared meal that does not contain too much sugar and that I can share with my husband.",
+        value=("I want a sugared meal that does not contain too much sugar and that I can share with my husband."),
     )
     submitted = st.form_submit_button("Submit")
     if not openai_api_key.startswith("sk-"):
@@ -28,7 +29,7 @@ with st.form("my_form"):
             nlp = NLP(openai_api_key=openai_api_key)
 
             user_profile = nlp.process_user_input(text)
-        
+
         if not user_profile.is_recipe_request:
             if user_profile.language == "spanish":
                 st.warning("¡Por favor, pide una receta!", icon="⚠")
@@ -37,7 +38,7 @@ with st.form("my_form"):
             else:
                 st.warning("Please ask for a recipe!", icon="⚠")
             st.stop()
-            
+
         with st.spinner("Working on it..."):
             if user_profile.language == "spanish":
                 initial_message = "Generando recomendaciones de comidas..."
@@ -47,7 +48,7 @@ with st.form("my_form"):
                 initial_message = "Generating meal recommendations..."
 
         with st.spinner(initial_message):
-            vectorizer = Vectorizer('./tastyai/src/dataset/full_dataset.csv')
+            vectorizer = Vectorizer("./tastyai/src/dataset/full_dataset.csv")
             image_generator = ImageGenerator(openai_api_key)
             recommendation = Recommendation(vectorizer, openai_api_key)
             logger.debug("Getting recommendations...")
@@ -67,16 +68,16 @@ with st.form("my_form"):
                     st.markdown("**Ingredientes:**")
                 else:
                     st.markdown("**Ingredients:**")
-                
-                st.markdown("\n".join([f"- {ingredient}" for ingredient in meal['translated_ingredients']]))
+
+                st.markdown("\n".join([f"- {ingredient}" for ingredient in meal["translated_ingredients"]]))
                 if user_profile.language == "spanish":
                     st.markdown("**Instrucciones:**")
                 elif user_profile.language == "portuguese":
                     st.markdown("**Instruções:**")
                 else:
                     st.markdown("**Directions:**")
-                
-                st.markdown("\n".join([f"{i+1}. {step}" for i, step in enumerate(meal['translated_directions'])]))
+
+                st.markdown("\n".join([f"{i + 1}. {step}" for i, step in enumerate(meal["translated_directions"])]))
 
                 spinner_message = f"Generating image for {meal['translated_title']}..."
                 if user_profile.language == "spanish":
@@ -91,11 +92,19 @@ with st.form("my_form"):
                         response = requests.get(image_url)
                         img = Image.open(BytesIO(response.content))
                     if user_profile.language == "spanish":
-                        st.image(img, caption=f"Imagen generada por IA de {meal['translated_title']}")
+                        st.image(
+                            img,
+                            caption=(f"Imagen generada por IA de {meal['translated_title']}"),
+                        )
                     elif user_profile.language == "portuguese":
-                        st.image(img, caption=f"Imagem gerada por IA de {meal['translated_title']}")
+                        st.image(
+                            img,
+                            caption=(f"Imagem gerada por IA de {meal['translated_title']}"),
+                        )
                     else:
-                        st.image(img, caption=f"AI-generated image of {meal['translated_title']}")
+                        st.image(
+                            caption=(f"AI-generated image of {meal['translated_title']}"),
+                        )
                 else:
                     if user_profile.language == "spanish":
                         st.warning("No se pudo generar una imagen para esta comida.")

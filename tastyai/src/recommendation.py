@@ -1,10 +1,12 @@
 import ast
-import torch
+
 import numpy as np
-from vectorizer import Vectorizer
-from user_profile import UserProfile
-from translator import Translator
+import torch
 import torch.nn.functional as F
+from translator import Translator
+from user_profile import UserProfile
+from vectorizer import Vectorizer
+
 
 class Recommendation:
     def __init__(self, vectorizer: Vectorizer, openai_key):
@@ -15,19 +17,19 @@ class Recommendation:
         self.openai_key = openai_key
 
         self.embeddings_tensor = torch.tensor(self.embeddings, dtype=torch.float32, device=self.vectorizer.device)
-    
+
     def __string_to_list(self, s):
         """Convert a string representation of a list into an actual list."""
         try:
             return ast.literal_eval(s)
         except (SyntaxError, ValueError):
-            return [item.strip() for item in s.strip('[]').split(',')]
+            return [item.strip() for item in s.strip("[]").split(",")]
 
     def get_meal_recommendation(self, user_profile: UserProfile, top_n=5):
         """Generate personalized meal recommendations."""
-        query_string = " ".join(user_profile.dietary_preferences + 
-                                user_profile.preferred_ingredients + 
-                                [user_profile.sugar_preference])
+        query_string = " ".join(
+            user_profile.dietary_preferences + user_profile.preferred_ingredients + [user_profile.sugar_preference]
+        )
 
         query_vector = self.model.encode([query_string], convert_to_tensor=True)
         similarity_scores = F.cosine_similarity(query_vector, self.embeddings_tensor).cpu().numpy()
@@ -45,7 +47,7 @@ class Recommendation:
                 suggested_meal["directions"] = self.__string_to_list(suggested_meal["directions"])
 
             recommendations.append(suggested_meal)
-        
+
         return self.filter_recommendations(recommendations, user_profile)
 
     def filter_recommendations(self, recommendations, user_profile: UserProfile):
@@ -54,10 +56,12 @@ class Recommendation:
         for meal in recommendations:
             if any(ingredient in meal["ingredients"] for ingredient in user_profile.excluded_ingredients):
                 continue
-            
-            if user_profile.sugar_preference == "sugar_free" and any("sugar" in ingredient.lower() for ingredient in meal["ingredients"]):
+
+            if user_profile.sugar_preference == "sugar_free" and any(
+                "sugar" in ingredient.lower() for ingredient in meal["ingredients"]
+            ):
                 continue
-            
+
             translated_meal = meal.copy()
             if user_profile.language == "english":
                 translated_meal["translated_title"] = meal["title"]
@@ -74,6 +78,5 @@ class Recommendation:
                 translated_meal["translated_directions"] = translator.translate(directions_text).split(" | ")
 
             filtered_recommendations.append(translated_meal)
-            
-        return filtered_recommendations
 
+        return filtered_recommendations

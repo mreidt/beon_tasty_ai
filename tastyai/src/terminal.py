@@ -1,8 +1,9 @@
-from vectorizer import Vectorizer
 import logging
+
+from image_generator import ImageGenerator
 from nlp import NLP
 from recommendation import Recommendation
-from image_generator import ImageGenerator
+from vectorizer import Vectorizer
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,7 +26,7 @@ if openai_api_key.startswith("sk-"):
     nlp = NLP(openai_api_key=openai_api_key)
 
     user_profile = nlp.process_user_input(text)
-        
+
     while not user_profile.is_recipe_request:
         if user_profile.language == "spanish":
             print("¡Por favor, pide una receta!")
@@ -48,7 +49,7 @@ if openai_api_key.startswith("sk-"):
             initial_message = "Generating meal recommendations..."
 
         print(initial_message)
-        vectorizer = Vectorizer('./tastyai/src/dataset/full_dataset.csv')
+        vectorizer = Vectorizer("./tastyai/src/dataset/full_dataset.csv")
         image_generator = ImageGenerator(openai_api_key)
         recommendation = Recommendation(vectorizer, openai_api_key)
         logger.debug("Getting recommendations...")
@@ -68,16 +69,16 @@ if openai_api_key.startswith("sk-"):
                 print("**Ingredientes:**")
             else:
                 print("**Ingredients:**")
-                    
-            print("\n".join([f"- {ingredient}" for ingredient in meal['translated_ingredients']]))
+
+            print("\n".join([f"- {ingredient}" for ingredient in meal["translated_ingredients"]]))
             if user_profile.language == "spanish":
                 print("**Instrucciones:**")
             elif user_profile.language == "portuguese":
                 print("**Instruções:**")
             else:
                 print("**Directions:**")
-                    
-            print("\n".join([f"{i+1}. {step}" for i, step in enumerate(meal['translated_directions'])]))
+
+            print("\n".join([f"{i + 1}. {step}" for i, step in enumerate(meal["translated_directions"])]))
 
             spinner_message = f"Generating image for {meal['translated_title']}..."
             if user_profile.language == "spanish":
