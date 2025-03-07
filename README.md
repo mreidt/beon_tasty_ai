@@ -3,6 +3,8 @@ TastyAI is a smart, AI-powered meal recommendation platform that provides users 
 
 You can find the methodology documentation [here](tastyai/doc/methodology.md).
 
+Query and response examples can be found [here](tastyai/doc/examples.md).
+
 ## How to run the project
 
 The first step to execute the project is to put the dataset inside `tastyai/src/dataset` folder. You should put the file with the name `full_dataset.csv`.
