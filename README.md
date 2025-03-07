@@ -7,10 +7,10 @@ You can find the methodology documentation [here](tastyai/doc/methodology.md).
 
 The first step to execute the project is to put the dataset inside `tastyai/src/dataset` folder. You should put the file with the name `full_dataset.csv`.
 
-We have two types of execution for this project. The first option uses `streamlit`, so you can have an UI directly on your browser (simulates chat gpt interface). To run in this mode, go to the root of the project, then go to `tastyai/src` and then run:
+We have two types of execution for this project. The first option uses `streamlit`, so you can have an UI directly on your browser (simulates chat gpt interface). To run in this mode, go to the root of the project, then go to `tastyai` and then run:
 - `make run_streamlit`
 
-If you don't want an UI, just want to run on the terminal, you should go to the root of the project, then go to `tastyai/src` and then run:
+If you don't want an UI, just want to run on the terminal, you should go to the root of the project, then go to `tastyai` and then run:
 - `make run_terminal`
 
 Those commands will install all the required libraries and then run the project.
